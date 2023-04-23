@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 public class Users {
     @Id
-    @Column(name = "user_name",nullable = false, unique = true)
+    @Column(name = "user_name", nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
