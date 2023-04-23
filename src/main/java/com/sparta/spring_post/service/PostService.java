@@ -29,7 +29,7 @@ public class PostService {
     // 목록 조회
     @Transactional(readOnly = true)
     public ResponseDto<List<Post>> getAllPosts() {
-        List<Post> posts = postRepository.findAllByOrderByModifiedAtDesc();
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         return ResponseDto.setSuccess("게시물 목록 조회 성공!", posts);
     }
 
