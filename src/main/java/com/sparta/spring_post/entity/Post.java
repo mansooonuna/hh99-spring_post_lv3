@@ -1,9 +1,7 @@
-// Client <-Dto-> Controller <-Dto-> Service <-Dto-> Repository <-Entity-> DB
 package com.sparta.spring_post.entity;
 
 import com.sparta.spring_post.dto.PostRequestDto;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "post_id")
     private Long id;
 
     @Column(nullable = false)
@@ -23,17 +20,11 @@ public class Post extends Timestamped {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_name", nullable = false)
     private Users users;
 
-    @Builder
-    public Post(String title, String content, Users users) {
-        this.title = title;
-        this.content = content;
+    public Post(Users users, PostRequestDto postRequestDto) {
         this.users = users;
-    }
-
-    public Post(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
     }
@@ -42,4 +33,5 @@ public class Post extends Timestamped {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
     }
+
 }

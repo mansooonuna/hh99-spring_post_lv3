@@ -1,4 +1,3 @@
-// Client <-Dto-> Controller <-Dto-> Service <-Dto-> Repository <-Entity-> DB
 package com.sparta.spring_post.repository;
 
 import com.sparta.spring_post.entity.Post;
@@ -8,4 +7,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByOrderByModifiedAtDesc();
+
 }

@@ -18,7 +18,9 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserService {
 
+    // UserRepository 연결
     private final UserRepository userRepository;
+    // JwtUtil 연결
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -44,7 +46,7 @@ public class UserService {
 
         Users users = new Users(username, password);
         userRepository.save(users);
-        return ResponseDto.setSuccess("회원가입 성공", null);
+        return ResponseDto.setSuccess("회원가입 성공!", null);
     }
 
     @Transactional(readOnly = true)
@@ -62,8 +64,8 @@ public class UserService {
             return ResponseDto.setFailed("일치하지 않는 비밀번호 입니다.");
         }
 
-        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername(), users.getRole()));
-        return ResponseDto.setSuccess("로그인 성공", null);
+        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername()));
+        return ResponseDto.setSuccess("로그인 성공!", null);
     }
 
 }
