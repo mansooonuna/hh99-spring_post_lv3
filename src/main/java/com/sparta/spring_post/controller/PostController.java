@@ -11,37 +11,38 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class PostController {
 
     // PostService 연결
     private final PostService postService;
 
     // 목록 조회
-    @GetMapping("/api/posts")
+    @GetMapping("/posts")
     public List<PostResponseDto> getAllPosts() {
         return postService.getAllPosts();
     }
 
     // 상세 조회
-    @GetMapping("/api/posts/{id}")
+    @GetMapping("/posts/{id}")
     public PostResponseDto getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
 
     // 추가
-    @PostMapping("/api/post")
+    @PostMapping("/post")
     public PostResponseDto createPost(@RequestBody PostRequestDto postRequestDto) {
         return postService.createPost(postRequestDto);
     }
 
     // 수정
-    @PutMapping("/api/post/{id}")
+    @PutMapping("/post/{id}")
     public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto postRequestDto) {
         return postService.updatePost(id, postRequestDto);
     }
 
     // 삭제
-    @DeleteMapping("/api/post/{id}")
+    @DeleteMapping("/post/{id}")
     public String deletePost(@PathVariable Long id, @RequestParam("password") String password) {
         return postService.deletePost(id, password);
     }

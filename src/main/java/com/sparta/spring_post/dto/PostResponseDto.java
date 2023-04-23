@@ -3,6 +3,7 @@ package com.sparta.spring_post.dto;
 
 import com.sparta.spring_post.entity.Post;
 import com.sparta.spring_post.entity.Timestamped;
+import com.sparta.spring_post.entity.Users;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,7 @@ public class PostResponseDto extends Timestamped {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private Long id;
-    private String author;
+    private Users users;
     private String title;
     private String content;
 
@@ -22,7 +23,7 @@ public class PostResponseDto extends Timestamped {
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
         this.id = post.getId();
-        this.author = post.getAuthor();
+        this.users = post.getUsers();
         this.title = post.getTitle();
         this.content = post.getContent();
     }

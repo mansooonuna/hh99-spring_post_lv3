@@ -51,9 +51,6 @@ public class PostService {
     public PostResponseDto updatePost(Long id, PostRequestDto postRequestDto) {
         Post post = postRepository.findById(id).orElseThrow();
         PostResponseDto dtos = new PostResponseDto(post);
-        if (!post.getPassword().equals(postRequestDto.getPassword())) {
-            return dtos;
-        }
         post.update(postRequestDto);
         return new PostResponseDto(post);
     }
@@ -62,9 +59,9 @@ public class PostService {
     @Transactional
     public String deletePost(Long id, String password) {
         Post post = postRepository.findById(id).orElseThrow();
-        if (!post.getPassword().equals(password)) {
-            return "비밀번호가 일치하지 않습니다.";
-        }
+//        if (!post.getPassword().equals(password)) {
+//            return "비밀번호가 일치하지 않습니다.";
+//        }
         postRepository.deleteById(id);
         return "성공적으로 삭제되었습니다.";
     }

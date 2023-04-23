@@ -1,7 +1,6 @@
 // Client <-Dto-> Controller <-Dto-> Service <-Dto-> Repository <-Entity-> DB
 package com.sparta.spring_post.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.spring_post.dto.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -14,14 +13,8 @@ import lombok.NoArgsConstructor;
 public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "post_id")
     private Long id;
-
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    @JsonIgnore // 데이터를 주고받을 때, 해당 데이터 ignore. 응답값 보이지 않음
-    private String password;
 
     @Column(nullable = false)
     private String title;
@@ -29,17 +22,23 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String content;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users users;
+
     @Builder
-    public Post(String author, String password, String title, String content) {
-        this.author = author;
-        this.password = password;
+    public Post(String title, String content, Users users) {
         this.title = title;
         this.content = content;
+        this.users = users;
+    }
+
+    public Post(PostRequestDto postRequestDto) {
+        this.title = postRequestDto.getTitle();
+        this.content = postRequestDto.getContent();
     }
 
     public void update(PostRequestDto postRequestDto) {
-        this.author = postRequestDto.getAuthor();
-        this.password = postRequestDto.getPassword();
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
     }
