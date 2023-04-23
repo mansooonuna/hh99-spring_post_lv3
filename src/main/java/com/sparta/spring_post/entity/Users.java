@@ -24,13 +24,17 @@ public class Users {
     @JsonIgnore
     private String password;
 
+    @Column(nullable = true)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
     public Users(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
     public Users(SignupRequestDto signupRequestDto) {
-        this.username = username;
-        this.password = password;
+        this.username = signupRequestDto.getUsername();
+        this.password = signupRequestDto.getPassword();
     }
 }

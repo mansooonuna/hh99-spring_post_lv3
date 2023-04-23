@@ -26,9 +26,9 @@ public class UserController {
     }
 
     // 로그인
-//    @PostMapping("/login")
-//    public ResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
-//        return userService.login(loginRequestDto, httpServletResponse);
-//    }
+    @PostMapping("/login")
+    public ResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
+        return userService.login(loginRequestDto, httpServletResponse);
+    }
 
 }
