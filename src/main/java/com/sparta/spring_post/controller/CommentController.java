@@ -28,6 +28,7 @@ public class CommentController {
         return commentService.updateComment(id, commentRequestDto, httpServletRequest);
     }
 
+    // 댓글 삭제
     @DeleteMapping("/comment/{id}")
     public UserResponseDto<Comment> deleteComment(@PathVariable Long id, HttpServletRequest httpServletRequest){
         return commentService.deleteComment(id, httpServletRequest);

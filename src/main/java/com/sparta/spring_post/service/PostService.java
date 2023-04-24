@@ -45,7 +45,6 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException(id + "번 게시물이 존재하지 않습니다.")
         );
-//        List<Comment> comments = commentRepository.findAllByPostId();
         return new PostResponseDto(post);
     }
 
@@ -54,7 +53,6 @@ public class PostService {
     public PostResponseDto createPost(PostRequestDto postRequestDto, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
         Post post = new Post(user, postRequestDto);
-//        List<Comment> comments = commentRepository.findAllByPostId();
         postRepository.save(post);
         return new PostResponseDto(post);
     }
