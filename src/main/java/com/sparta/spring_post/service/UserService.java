@@ -29,7 +29,6 @@ public class UserService {
     public ResponseDto signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = signupRequestDto.getPassword();
-        String adminToken = signupRequestDto.getAdminToken();
 
         // 아이디 형식 확인
         if (!Pattern.matches("^(?=.*[a-z])(?=.*\\d)[a-z0-9]{4,10}$", username)) {
