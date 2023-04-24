@@ -29,12 +29,12 @@ public class UserService {
         String password = signupRequestDto.getPassword();
 
         // 아이디 형식 확인
-        if (!Pattern.matches("^[a-z0-9]{4,10}$", username)) {
+        if (!Pattern.matches("^(?=.*[a-z])(?=.*\\d)[a-z0-9]{4,10}$", username)) {
             return ResponseDto.setFailed("형식에 맞지 않는 아이디 입니다.");
         }
 
         // 비밀번호 형식 확인
-        if (!Pattern.matches("^[a-zA-Z0-9]{8,15}$", password)) {
+        if (!Pattern.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&])[a-zA-Z\\d~!@#$%^&]{8,15}$", password)) {
             return ResponseDto.setFailed("형식에 맞지 않는 비밀번호 입니다.");
         }
 
