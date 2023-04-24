@@ -1,7 +1,7 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.CommentRequestDto;
-import com.sparta.spring_post.dto.ResponseDto;
+import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.Comment;
 import com.sparta.spring_post.entity.Post;
 import com.sparta.spring_post.entity.Users;
@@ -27,7 +27,7 @@ public class CommentService {
 
     // 댓글 등록
     @Transactional
-    public ResponseDto<Comment> addComment(CommentRequestDto commentRequestDto, HttpServletRequest httpServletRequest) {
+    public UserResponseDto<Comment> addComment(CommentRequestDto commentRequestDto, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
 
         Post post = postRepository.findById(commentRequestDto.getPostId()).orElseThrow(
@@ -35,14 +35,14 @@ public class CommentService {
         );
 
 
-        Comment comment = new Comment(user, commentRequestDto);
+        Comment comment = new Comment(user, commentRequestDto, post);
         commentRepository.save(comment);
-        return ResponseDto.setSuccess("댓글이 등록되었습니다.", comment);
+        return UserResponseDto.setSuccess("댓글이 등록되었습니다.");
     }
 
     // 댓글 수정
     @Transactional
-    public ResponseDto<Comment> updateComment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest httpServletRequest) {
+    public UserResponseDto<Comment> updateComment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
 
         Comment comment = commentRepository.findById(id).orElseThrow(
@@ -51,17 +51,17 @@ public class CommentService {
 
         if (user.getRole().equals(user.getRole().ADMIN)) {
             comment.update(commentRequestDto);
-            return ResponseDto.setSuccess("댓글이 수정되었습니다.", comment);
+            return UserResponseDto.setSuccess("댓글이 수정되었습니다.");
         }
 
         comment.update(commentRequestDto);
-        return ResponseDto.setSuccess("댓글이 수정되었습니다.", comment);
+        return UserResponseDto.setSuccess("댓글이 수정되었습니다.");
 
     }
 
     // 댓글 삭제
     @Transactional
-    public ResponseDto<Comment> deleteComment(Long id, HttpServletRequest httpServletRequest) {
+    public UserResponseDto<Comment> deleteComment(Long id, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
 
         Comment comment = commentRepository.findById(id).orElseThrow(
@@ -70,11 +70,11 @@ public class CommentService {
 
         if (user.getRole().equals(user.getRole().ADMIN)) {
             commentRepository.delete(comment);
-            return ResponseDto.setSuccess("댓글 삭제 성공", comment);
+            return UserResponseDto.setSuccess("댓글 삭제 성공");
         }
 
         commentRepository.delete(comment);
-        return ResponseDto.setSuccess("댓글 삭제 성공", comment);
+        return UserResponseDto.setSuccess("댓글 삭제 성공");
 
     }
 
