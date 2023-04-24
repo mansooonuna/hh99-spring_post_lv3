@@ -1,5 +1,8 @@
 package com.sparta.spring_post.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sparta.spring_post.dto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +20,7 @@ public class Comment extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
+    @JsonIgnore
     private Post post;
 
     @Column(nullable = false)
@@ -24,13 +28,14 @@ public class Comment extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "user_name", nullable = false)
+    @JsonManagedReference
     private Users users;
 
 
     public Comment(Users user, CommentRequestDto commentRequestDto, Post post) {
+        this.post = post;
         this.users = user;
         this.content = commentRequestDto.getContent();
-        this.post = post;
     }
 
 
