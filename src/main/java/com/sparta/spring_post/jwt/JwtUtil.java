@@ -3,14 +3,14 @@ package com.sparta.spring_post.jwt;
 import com.sparta.spring_post.entity.RoleType;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;

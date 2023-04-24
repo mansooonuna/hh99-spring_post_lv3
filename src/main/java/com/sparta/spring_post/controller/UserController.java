@@ -1,17 +1,17 @@
 package com.sparta.spring_post.controller;
 
 import com.sparta.spring_post.dto.LoginRequestDto;
-import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.dto.SignupRequestDto;
+import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.Users;
 import com.sparta.spring_post.service.UserService;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor

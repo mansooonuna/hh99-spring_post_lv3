@@ -1,7 +1,6 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.CommentRequestDto;
-import com.sparta.spring_post.dto.PostResponseDto;
 import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.Comment;
 import com.sparta.spring_post.entity.Post;

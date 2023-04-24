@@ -1,17 +1,17 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.LoginRequestDto;
-import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.dto.SignupRequestDto;
+import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.RoleType;
 import com.sparta.spring_post.entity.Users;
 import com.sparta.spring_post.jwt.JwtUtil;
 import com.sparta.spring_post.repository.UserRepository;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -66,16 +66,18 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         // 아이디 확인
-        Users users = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 아이디입니다.")
-        );
+        Optional<Users> found = userRepository.findByUsername(username);
+        if (!found.isPresent()) {
+            return UserResponseDto.setFailed("회원을 찾을 수 없습니다.");
+        }
 
+        Users user = userRepository.findByUsername(username).orElseThrow();
         // 비밀번호 확인
-        if (!users.getPassword().equals(password)) {
+        if (!user.getPassword().equals(password)) {
             return UserResponseDto.setFailed("일치하지 않는 비밀번호 입니다.");
         }
 
-        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername(), users.getRole()));
+        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
         return UserResponseDto.setSuccess("로그인 성공!");
     }
 
