@@ -1,7 +1,7 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.LoginRequestDto;
-import com.sparta.spring_post.dto.ResponseDto;
+import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.dto.SignupRequestDto;
 import com.sparta.spring_post.entity.RoleType;
 import com.sparta.spring_post.entity.Users;
@@ -26,42 +26,42 @@ public class UserService {
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
-    public ResponseDto signup(SignupRequestDto signupRequestDto) {
+    public UserResponseDto<Users> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = signupRequestDto.getPassword();
 
         // 아이디 형식 확인
         if (!Pattern.matches("^(?=.*[a-z])(?=.*\\d)[a-z0-9]{4,10}$", username)) {
-            return ResponseDto.setFailed("형식에 맞지 않는 아이디 입니다.");
+            return UserResponseDto.setFailed("형식에 맞지 않는 아이디 입니다.");
         }
 
         // 비밀번호 형식 확인
         if (!Pattern.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&])[a-zA-Z\\d~!@#$%^&]{8,15}$", password)) {
-            return ResponseDto.setFailed("형식에 맞지 않는 비밀번호 입니다.");
+            return UserResponseDto.setFailed("형식에 맞지 않는 비밀번호 입니다.");
         }
 
         // 회원 중복 확인
         Optional<Users> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            return ResponseDto.setFailed("중복된 사용자입니다.");
+            return UserResponseDto.setFailed("중복된 사용자입니다.");
         }
 
         // 관리자 확인
         RoleType role = RoleType.USER;
         if (signupRequestDto.isAdmin()) {
             if (signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                return ResponseDto.setFailed("관리자 암호가 틀려 등록이 불가능합니다.");
+                return UserResponseDto.setFailed("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = RoleType.ADMIN;
         }
 
         Users users = new Users(username, password, role);
         userRepository.save(users);
-        return ResponseDto.setSuccess("회원가입 성공!", null);
+        return UserResponseDto.setSuccess("회원가입 성공!");
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
+    public UserResponseDto<Users> login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -72,11 +72,11 @@ public class UserService {
 
         // 비밀번호 확인
         if (!users.getPassword().equals(password)) {
-            return ResponseDto.setFailed("일치하지 않는 비밀번호 입니다.");
+            return UserResponseDto.setFailed("일치하지 않는 비밀번호 입니다.");
         }
 
         httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername(), users.getRole()));
-        return ResponseDto.setSuccess("로그인 성공!", null);
+        return UserResponseDto.setSuccess("로그인 성공!");
     }
 
 }
