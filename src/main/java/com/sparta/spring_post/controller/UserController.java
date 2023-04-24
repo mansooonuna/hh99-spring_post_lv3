@@ -4,7 +4,7 @@ import com.sparta.spring_post.dto.LoginRequestDto;
 import com.sparta.spring_post.dto.ResponseDto;
 import com.sparta.spring_post.dto.SignupRequestDto;
 import com.sparta.spring_post.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
