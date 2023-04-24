@@ -1,6 +1,7 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.CommentRequestDto;
+import com.sparta.spring_post.dto.PostResponseDto;
 import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.Comment;
 import com.sparta.spring_post.entity.Post;
@@ -49,13 +50,12 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
         );
 
-        if (user.getRole().equals(user.getRole().ADMIN)) {
+        if (comment.getUsers().getUsername().equals(user.getUsername()) || user.getRole().equals(user.getRole().ADMIN)) {
             comment.update(commentRequestDto);
             return UserResponseDto.setSuccess("댓글이 수정되었습니다.");
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
         }
-
-        comment.update(commentRequestDto);
-        return UserResponseDto.setSuccess("댓글이 수정되었습니다.");
 
     }
 
@@ -68,13 +68,12 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
         );
 
-        if (user.getRole().equals(user.getRole().ADMIN)) {
+        if (comment.getUsers().getUsername().equals(user.getUsername()) || user.getRole().equals(user.getRole().ADMIN)) {
             commentRepository.delete(comment);
             return UserResponseDto.setSuccess("댓글 삭제 성공");
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
         }
-
-        commentRepository.delete(comment);
-        return UserResponseDto.setSuccess("댓글 삭제 성공");
 
     }
 
