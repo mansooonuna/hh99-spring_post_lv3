@@ -1,5 +1,7 @@
 package com.sparta.spring_post.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sparta.spring_post.dto.PostRequestDto;
 import javax.persistence.*;
 import lombok.Getter;
@@ -27,6 +29,7 @@ public class Post extends Timestamped {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
+    @JsonBackReference
     private List<Comment> comments;
 
 

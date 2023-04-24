@@ -4,13 +4,11 @@ import com.sparta.spring_post.entity.Comment;
 import com.sparta.spring_post.entity.Post;
 import com.sparta.spring_post.entity.Users;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
 public class PostResponseDto {
     private Long id;
     private String title;
@@ -30,6 +28,4 @@ public class PostResponseDto {
         this.modifiedAt = post.getModifiedAt();
         this.comments = post.getComments();
     }
-
-
 }
