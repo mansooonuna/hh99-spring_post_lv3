@@ -19,6 +19,10 @@ public class Users {
     @JsonIgnore
     private String password;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
+
     public Users(String username, String password) {
         this.username = username;
         this.password = password;

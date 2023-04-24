@@ -64,7 +64,7 @@ public class UserService {
             return ResponseDto.setFailed("일치하지 않는 비밀번호 입니다.");
         }
 
-        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername()));
+        httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(users.getUsername(), users.getRole()));
         return ResponseDto.setSuccess("로그인 성공!", null);
     }
 
