@@ -3,6 +3,7 @@ package com.sparta.spring_post.service;
 import com.sparta.spring_post.dto.LoginRequestDto;
 import com.sparta.spring_post.dto.ResponseDto;
 import com.sparta.spring_post.dto.SignupRequestDto;
+import com.sparta.spring_post.entity.RoleType;
 import com.sparta.spring_post.entity.Users;
 import com.sparta.spring_post.jwt.JwtUtil;
 import com.sparta.spring_post.repository.UserRepository;
@@ -22,11 +23,13 @@ public class UserService {
     private final UserRepository userRepository;
     // JwtUtil 연결
     private final JwtUtil jwtUtil;
+    private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
     public ResponseDto signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = signupRequestDto.getPassword();
+        String adminToken = signupRequestDto.getAdminToken();
 
         // 아이디 형식 확인
         if (!Pattern.matches("^(?=.*[a-z])(?=.*\\d)[a-z0-9]{4,10}$", username)) {
@@ -44,7 +47,16 @@ public class UserService {
             return ResponseDto.setFailed("중복된 사용자입니다.");
         }
 
-        Users users = new Users(username, password);
+        // 관리자 확인
+        RoleType role = RoleType.USER;
+        if (signupRequestDto.isAdmin()) {
+            if (signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
+                return ResponseDto.setFailed("관리자 암호가 틀려 등록이 불가능합니다.");
+            }
+            role = RoleType.ADMIN;
+        }
+
+        Users users = new Users(username, password, role);
         userRepository.save(users);
         return ResponseDto.setSuccess("회원가입 성공!", null);
     }
