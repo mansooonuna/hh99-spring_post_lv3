@@ -15,8 +15,9 @@ public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     @Column(nullable = false)
     private String content;
@@ -26,10 +27,10 @@ public class Comment extends Timestamped {
     private Users users;
 
 
-    public Comment(Users user, CommentRequestDto commentRequestDto) {
+    public Comment(Users user, CommentRequestDto commentRequestDto, Post post) {
         this.users = user;
         this.content = commentRequestDto.getContent();
-        this.postId = commentRequestDto.getPostId();
+        this.post = post;
     }
 
 
