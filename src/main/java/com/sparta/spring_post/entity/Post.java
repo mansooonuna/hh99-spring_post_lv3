@@ -1,7 +1,7 @@
 package com.sparta.spring_post.entity;
 
 import com.sparta.spring_post.dto.PostRequestDto;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
