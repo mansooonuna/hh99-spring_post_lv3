@@ -64,7 +64,6 @@ public class PostService {
 
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("해당 글이 존재하지 않습니다."));
-//        List<Comment> comments = commentRepository.findAllByPostId();
 
         if (post.getUsers().getUsername().equals(user.getUsername()) || user.getRole().equals(user.getRole().ADMIN)) {
             post.update(postRequestDto);
