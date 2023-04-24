@@ -67,8 +67,13 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("해당 글이 존재하지 않습니다."));
 //        List<Comment> comments = commentRepository.findAllByPostId();
-        post.update(postRequestDto);
-        return new PostResponseDto(post);
+
+        if (post.getUsers().getUsername().equals(user.getUsername()) || user.getRole().equals(user.getRole().ADMIN)) {
+            post.update(postRequestDto);
+            return new PostResponseDto(post);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
     }
 
     // 게시물 삭제
@@ -77,8 +82,13 @@ public class PostService {
         Users user = checkJwtToken(httpServletRequest);
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new NullPointerException(String.valueOf(UserResponseDto.setFailed("게시글 삭제 실패"))));
-        postRepository.delete(post);
-        return UserResponseDto.setSuccess("게시글 삭제 성공");
+
+        if (post.getUsers().getUsername().equals(user.getUsername()) || user.getRole().equals(user.getRole().ADMIN)) {
+            postRepository.delete(post);
+            return UserResponseDto.setSuccess("게시글 삭제 성공");
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
 
     }
 

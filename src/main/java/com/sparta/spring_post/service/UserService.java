@@ -49,7 +49,7 @@ public class UserService {
         // 관리자 확인
         RoleType role = RoleType.USER;
         if (signupRequestDto.isAdmin()) {
-            if (signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
+            if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
                 return UserResponseDto.setFailed("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = RoleType.ADMIN;
