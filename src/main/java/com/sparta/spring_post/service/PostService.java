@@ -3,6 +3,7 @@ package com.sparta.spring_post.service;
 import com.sparta.spring_post.dto.PostRequestDto;
 import com.sparta.spring_post.dto.ResponseDto;
 import com.sparta.spring_post.entity.Post;
+import com.sparta.spring_post.entity.RoleType;
 import com.sparta.spring_post.entity.Users;
 import com.sparta.spring_post.jwt.JwtUtil;
 import com.sparta.spring_post.repository.PostRepository;
@@ -85,7 +86,12 @@ public class PostService {
         }
 
         claims = jwtUtil.getUserInfoFromToken(token);
-        if (post.getUsers().getUsername().equals(claims.getSubject())) {
+
+        Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 사용자입니다.")
+        );
+
+        if (post.getUsers().getUsername().equals(claims.getSubject()) || user.getRole().equals(RoleType.ADMIN)) {
             post.update(postRequestDto);
             return ResponseDto.setSuccess(id + "번 게시물 수정 성공!", post);
         } else {
@@ -114,7 +120,12 @@ public class PostService {
         }
 
         claims = jwtUtil.getUserInfoFromToken(token);
-        if (post.getUsers().getUsername().equals(claims.getSubject())) {
+
+        Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 사용자입니다.")
+        );
+
+        if (post.getUsers().getUsername().equals(claims.getSubject()) || user.getRole().equals(RoleType.ADMIN)) {
             postRepository.deleteById(id);
             return ResponseDto.setSuccess(id + "번 게시물 삭제 성공!", null);
         } else {
