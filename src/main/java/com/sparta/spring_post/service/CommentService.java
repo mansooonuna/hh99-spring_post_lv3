@@ -1,7 +1,6 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.CommentRequestDto;
-import com.sparta.spring_post.dto.PostRequestDto;
 import com.sparta.spring_post.dto.ResponseDto;
 import com.sparta.spring_post.entity.Comment;
 import com.sparta.spring_post.entity.Post;
@@ -45,9 +44,15 @@ public class CommentService {
     @Transactional
     public ResponseDto<Comment> updateComment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
+
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
         );
+
+        if (user.getRole().equals(user.getRole().ADMIN)) {
+            comment.update(commentRequestDto);
+            return ResponseDto.setSuccess("댓글이 수정되었습니다.", comment);
+        }
 
         comment.update(commentRequestDto);
         return ResponseDto.setSuccess("댓글이 수정되었습니다.", comment);
@@ -56,11 +61,17 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public ResponseDto<Comment> deleteComment(Long id,  HttpServletRequest httpServletRequest) {
+    public ResponseDto<Comment> deleteComment(Long id, HttpServletRequest httpServletRequest) {
         Users user = checkJwtToken(httpServletRequest);
+
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
         );
+
+        if (user.getRole().equals(user.getRole().ADMIN)) {
+            commentRepository.delete(comment);
+            return ResponseDto.setSuccess("댓글 삭제 성공", comment);
+        }
 
         commentRepository.delete(comment);
         return ResponseDto.setSuccess("댓글 삭제 성공", comment);
