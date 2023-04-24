@@ -1,11 +1,12 @@
 package com.sparta.spring_post.service;
 
 import com.sparta.spring_post.dto.PostRequestDto;
-import com.sparta.spring_post.dto.ResponseDto;
+import com.sparta.spring_post.dto.PostResponseDto;
+import com.sparta.spring_post.dto.UserResponseDto;
 import com.sparta.spring_post.entity.Post;
-import com.sparta.spring_post.entity.RoleType;
 import com.sparta.spring_post.entity.Users;
 import com.sparta.spring_post.jwt.JwtUtil;
+import com.sparta.spring_post.repository.CommentRepository;
 import com.sparta.spring_post.repository.PostRepository;
 import com.sparta.spring_post.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,115 +25,86 @@ public class PostService {
 
     // PostRepository 연결
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     // UserRepository 연결
     private final UserRepository userRepository;
     // JwtUtil 연결
     private final JwtUtil jwtUtil;
 
-    // 목록 조회
+
+    // 전체 게시물 목록 조회
     @Transactional(readOnly = true)
-    public ResponseDto<List<Post>> getAllPosts() {
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
-        return ResponseDto.setSuccess("게시물 목록 조회 성공!", posts);
+    public List<PostResponseDto> getAllPosts() {
+        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto::new).collect(Collectors.toList());
     }
 
-    // 상세 조회
+
+    // 선택한 게시물 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<Post> getPost(Long id) {
+    public PostResponseDto getPost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException(id + "번 게시물이 존재하지 않습니다.")
+                () -> new NullPointerException(id + "번 게시물이 존재하지 않습니다.")
         );
-        return ResponseDto.setSuccess(id + "번 게시물 조회 성공!", post);
+//        List<Comment> comments = commentRepository.findAllByPostId();
+        return new PostResponseDto(post);
     }
 
-    // 추가
+    // 게시물 등록
     @Transactional
-    public ResponseDto<Post> createPost(PostRequestDto postRequestDto, HttpServletRequest httpServletRequest) {
-        String token = jwtUtil.resolveToken(httpServletRequest);
-
-        if (token == null) {
-            return ResponseDto.setFailed("토큰이 없습니다.");
-        }
-
-        try {
-            jwtUtil.validateToken(token);
-        } catch (Exception e) {
-            return ResponseDto.setFailed("유효한 토큰이 없습니다.");
-        }
-
-        Users user = userRepository.findByUsername(postRequestDto.getUsername()).orElseThrow();
-
+    public PostResponseDto createPost(PostRequestDto postRequestDto, HttpServletRequest httpServletRequest) {
+        Users user = checkJwtToken(httpServletRequest);
         Post post = new Post(user, postRequestDto);
+//        List<Comment> comments = commentRepository.findAllByPostId();
         postRepository.save(post);
-        return ResponseDto.setSuccess("게시물 작성 성공!", post);
+        return new PostResponseDto(post);
     }
 
-    // 수정
+    // 게시물 수정
     @Transactional
-    public ResponseDto<Post> updatePost(Long id, PostRequestDto postRequestDto, HttpServletRequest httpServletRequest) {
-        String token = jwtUtil.resolveToken(httpServletRequest);
+    public PostResponseDto updatePost(Long id, PostRequestDto postRequestDto, HttpServletRequest httpServletRequest) {
+        Users user = checkJwtToken(httpServletRequest);
+
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new NullPointerException("해당 글이 존재하지 않습니다."));
+//        List<Comment> comments = commentRepository.findAllByPostId();
+        post.update(postRequestDto);
+        return new PostResponseDto(post);
+    }
+
+    // 게시물 삭제
+    @Transactional
+    public UserResponseDto<Post> deletePost(Long id, HttpServletRequest httpServletRequest) {
+        Users user = checkJwtToken(httpServletRequest);
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NullPointerException(String.valueOf(UserResponseDto.setFailed("게시글 삭제 실패"))));
+        postRepository.delete(post);
+        return UserResponseDto.setSuccess("게시글 삭제 성공");
+
+    }
+
+
+    // 토큰 체크
+    public Users checkJwtToken(HttpServletRequest request) {
+        // Request에서 Token 가져오기
+        String token = jwtUtil.resolveToken(request);
         Claims claims;
 
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException(id + "번 게시물이 없습니다.")
-        );
+        // 토큰이 있는 경우에만 게시글 접근 가능
+        if (token != null) {
+            if (jwtUtil.validateToken(token)) {
+                // 토큰에서 사용자 정보 가져오기
+                claims = jwtUtil.getUserInfoFromToken(token);
+            } else {
+                throw new IllegalArgumentException("Token Error");
+            }
 
-        if (token == null) {
-            return ResponseDto.setFailed("토큰이 없습니다.");
+            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+            Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+            );
+            return user;
+
         }
-
-        try {
-            jwtUtil.validateToken(token);
-        } catch (Exception e) {
-            return ResponseDto.setFailed("유효한 토큰이 없습니다.");
-        }
-
-        claims = jwtUtil.getUserInfoFromToken(token);
-
-        Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 사용자입니다.")
-        );
-
-        if (post.getUsers().getUsername().equals(claims.getSubject()) || user.getRole().equals(RoleType.ADMIN)) {
-            post.update(postRequestDto);
-            return ResponseDto.setSuccess(id + "번 게시물 수정 성공!", post);
-        } else {
-            return ResponseDto.setFailed(id + "번 게시물을 수정할 권한이 없습니다.");
-        }
+        return null;
     }
-
-    // 삭제
-    @Transactional
-    public ResponseDto deletePost(Long id, HttpServletRequest httpServletRequest) {
-        String token = jwtUtil.resolveToken(httpServletRequest);
-        Claims claims;
-
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException(id + "번 게시물이 없습니다.")
-        );
-
-        if (token == null) {
-            return ResponseDto.setFailed("토큰이 없습니다.");
-        }
-
-        try {
-            jwtUtil.validateToken(token);
-        } catch (Exception e) {
-            return ResponseDto.setFailed("유효한 토큰이 없습니다.");
-        }
-
-        claims = jwtUtil.getUserInfoFromToken(token);
-
-        Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 사용자입니다.")
-        );
-
-        if (post.getUsers().getUsername().equals(claims.getSubject()) || user.getRole().equals(RoleType.ADMIN)) {
-            postRepository.deleteById(id);
-            return ResponseDto.setSuccess(id + "번 게시물 삭제 성공!", null);
-        } else {
-            return ResponseDto.setFailed(id + "번 게시물을 삭제할 권한이 없습니다.");
-        }
-    }
-
 }
